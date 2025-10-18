@@ -124,13 +124,22 @@ export const generateAdditionalTasks = async (
 };
 
 
-export const continueChat = async (history: ChatMessage[], newMessage: string): Promise<string> => {
+export const continueChat = async (history: ChatMessage[], newMessage: string, project: Project | null): Promise<string> => {
     const ai = getAiClient();
+    
+    let systemInstruction = 'You are the "YouTube Growth Companion," a friendly and expert AI assistant dedicated to helping creators grow their YouTube channels. Provide concise, actionable, and encouraging advice. Your goal is to be a supportive partner in their content creation journey. Format your responses using markdown for readability.';
+
+    if (project) {
+        systemInstruction += `\n\nYou are currently advising for the channel "${project.channelName}".
+        - Niche: ${project.niche}
+        - Target Audience: ${project.targetAudience}
+        - Content Type: ${project.contentType}
+        Tailor your advice to this specific context.`;
+    }
+
     const chat = ai.chats.create({
         model: chatModel,
-        config: {
-            systemInstruction: 'You are the "YouTube Growth Companion," a friendly and expert AI assistant dedicated to helping creators grow their YouTube channels. Provide concise, actionable, and encouraging advice. Your goal is to be a supportive partner in their content creation journey. Format your responses using markdown for readability.'
-        },
+        config: { systemInstruction },
         history: history.map(msg => ({
             role: msg.role,
             parts: [{text: msg.content}]

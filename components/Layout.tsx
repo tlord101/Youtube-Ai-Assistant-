@@ -101,13 +101,21 @@ const Layout: React.FC = () => {
                 </div>
             </aside>
 
-            {/* Main Content */}
-            <main 
-                className="flex-1 overflow-y-auto"
-                onClick={() => isSidebarExpanded && setIsSidebarExpanded(false)}
-            >
-                <Outlet />
-            </main>
+            {/* Main Content Wrapper */}
+            <div className="flex-1 flex flex-col overflow-hidden">
+                {/* Main Content */}
+                <main 
+                    className="flex-1 overflow-y-auto"
+                    onClick={() => isSidebarExpanded && setIsSidebarExpanded(false)}
+                >
+                    <Outlet />
+                </main>
+
+                {/* Footer */}
+                <footer className="p-4 text-center text-sm text-slate-400 border-t border-slate-800">
+                    Build with love by <span className="text-blue-500 font-semibold">Tlord</span>
+                </footer>
+            </div>
         </div>
     );
 };

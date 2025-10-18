@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProjects } from '../contexts/ProjectsContext';
@@ -50,6 +49,7 @@ const Dashboard: React.FC = () => {
   const completedTasks = useMemo(() => activeProject?.tasks.filter(t => t.isCompleted).length || 0, [activeProject]);
   const totalTasks = activeProject?.tasks.length || 0;
   const progress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
+  const isTaskLimitReached = totalTasks >= 9;
 
   if (!activeProject) {
     return (
@@ -74,7 +74,7 @@ const Dashboard: React.FC = () => {
   }
 
   const handleGenerateMore = async () => {
-    if (!activeProject) return;
+    if (!activeProject || isTaskLimitReached) return;
 
     setIsGeneratingMore(true);
     setError(null);
@@ -129,8 +129,8 @@ const Dashboard: React.FC = () => {
       <div className="mt-8 text-center">
         <button
             onClick={handleGenerateMore}
-            disabled={isGeneratingMore}
-            className="inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 disabled:bg-indigo-400"
+            disabled={isGeneratingMore || isTaskLimitReached}
+            className="inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 disabled:bg-indigo-500 disabled:opacity-75 disabled:cursor-not-allowed"
         >
             {isGeneratingMore ? (
                 <>
@@ -144,6 +144,9 @@ const Dashboard: React.FC = () => {
                 </>
             )}
         </button>
+        {isTaskLimitReached && (
+            <p className="text-yellow-500 text-sm mt-2">Task limit of 9 reached for this project.</p>
+        )}
         {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
       </div>
 
